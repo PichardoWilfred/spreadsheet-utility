@@ -1,0 +1,20 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@vueup/vue-quill": "^1.2.0",
+    "nuxt": "^3.12.4",
+    "quill": "^2.0.2",
+    "vue": "latest",
+    "xlsx-style": "^0.8.13"
+  }
+}
