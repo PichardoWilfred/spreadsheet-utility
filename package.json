@@ -12,9 +12,12 @@
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@vueup/vue-quill": "^1.2.0",
+    "exceljs": "^4.4.0",
     "nuxt": "^3.12.4",
     "quill": "^2.0.2",
+    "sheetjs-style": "^0.15.8",
     "vue": "latest",
+    "xlsx-js-style": "^1.2.0",
     "xlsx-style": "^0.8.13"
   }
 }
