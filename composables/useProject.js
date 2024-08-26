@@ -16,7 +16,7 @@ export async function useProject(file) {
     const subject_titles = ['file number', 'status', 'current status', 'eta', 'note', 'ep link','ep date'];
     
     const get_state = (value_) => {return value_.slice(4,6)};
-    const has_valid_nomenclature = (file_) => String(file_).toLowerCase().startsWith(project_name.value.toLowerCase()) && office_store.states.map((state) => state.initials).includes( get_state(file_) ) ;
+    const has_valid_nomenclature = (file_) => String(file_.replace(/\s/g,'')).toLowerCase().startsWith(project_name.value.toLowerCase()) && office_store.states.map((state) => state.initials).includes( get_state(file_.replace(/\s/g,'')) ) ;
 
     excel_data.worksheets.map((worksheet) => {
         let worksheet_data = {id: worksheet.id, name: worksheet.name, files: []}
@@ -77,11 +77,10 @@ export async function useProject(file) {
             }
 
             if (is_file_row) { // when the row has a file within
-                row["_cells"].map(({text, address, row, _row}) => {
+                row["_cells"].map(({text, address, row, _row, style}) => {
                     if (has_valid_nomenclature(text)) { // if it is a file cell
                         // getting the letter
                         const get_letter = (column_name) => worksheet_data["title_cells"].find(({subject_title}) => subject_title === column_name); 
-                        let { column: file_letter } = get_letter('# File Number');
                         let { column: status_letter } = get_letter('Status'); // getting the letter of the status for this file
                         let { column: date_letter } = get_letter('Current Status / Time Date');
                         let { column: eta_letter } = get_letter('ETA');
@@ -97,16 +96,19 @@ export async function useProject(file) {
 
                         let ep_link = _row.getCell(ep_link_letter);
                         let ep_date = _row.getCell(ep_date_letter);
+
+                        let was_changed = status.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
                         
-                        let file = { 
-                            filename: text,
-                            address, 
+                        let file = {
+                            filename: text.replace(/\s/g,''),
+                            address,
                             row,
-                            worksheet: worksheet_data, 
-                            column: address.split("")[0], 
+                            was_changed: was_changed,
+                            worksheet: worksheet_data,
+                            column: address.split("")[0],
                             row_data: _row,
                             data: {
-                                name: text,
+                                name: text.replace(/\s/g,''),
                                 status: status.text,
                                 time_date: time_date.text,
 
@@ -126,6 +128,8 @@ export async function useProject(file) {
 
                             ep_link_address: ep_link.address,
                             ep_date_address: ep_date.address,
+
+                            local_office_state: get_state(text.replace(/\s/g,''))
                         }
 
                         files.value.push({...file});
