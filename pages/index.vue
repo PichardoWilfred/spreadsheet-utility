@@ -10,7 +10,7 @@
                 </p>
                 <div class="mt-5">
                     <client-only placeholder="loading...">
-                        <QuillEditor ref="editor" v-model:content="delta_" :options="options" @ready="quill_initialized"/>
+                        <QuillEditor ref="editor" :options="options"/>
                     </client-only>
                 </div>
                 <FileInput file_input_id="import_file" class="mt-10" @process_file="process_file"/>
@@ -30,29 +30,26 @@ const options = {
     placeholder: 'Compose an epic...',
     theme: 'snow'
 }
+
 const editor = ref(null);
+const delta_email_content = ref([]);
 
-const files = ref([]);
-const delta_ = ref([]);
-
+// const files_ = ref([]);
+// v-model:content="delta_"  @ready="quill_initialized"
 
 
 const process_file = async (file) => {
+    const {project_name, excel_data, files, loading_file} = await useProject(file); // the file will be fully proced
     
-    const {project_name, excel_data} = await useProject(file);
+    delta_email_content.value = files.value.filter(({was_changed}) => was_changed).map(({filename, data, was_changed}) => {
+        return { insert: `File ${filename} is in ${data.status}. \n\n` }
+    });
     
+    editor.value["editor"].__quill.setContents(delta_email_content.value);
 }
-// const quill_initialized = (editor) => {
-//     editor.value = editor;
-//     console.log('quilljs initialized');
-//     console.log(editor.value);
-// }
+
 
 onMounted(async () => {
-    
-    // XLSX is a global from the standalone script
-    const file_import_input = document.querySelector("input#import_file");
-
     async function handleFileAsync(e) {
 
         const file = e.target.files[0];
@@ -80,26 +77,9 @@ onMounted(async () => {
 
         workbook_utility.xlsx.load(data).then((excel_data) => {
             const ws = excel_data.getWorksheet('Hoja 1');
-            console.log(ws);
-            console.log(`------------------`);
-            let probable_status = [
-                'Report Completed', 
-                'Examiner Workbench', 
-                'In Process with Agent',
-                'In process with Vendor',
-                'In process with Energy',
-                'In process with RTT',
-                'Quality Control',
-                'Extensive Energy',
-                'Searching',
-                'Vendor Search',
-                'Vendor Support',
-                'Split and Labeling',
-            ].map((state) => state.toLocaleLowerCase());
 
             ws._rows.map((row) => {
                 row["_cells"].map((cell) => {
-                    
                     let row = cell["row"];
                     let address = cell["address"];
                     let value = cell.text;
@@ -110,7 +90,6 @@ onMounted(async () => {
                         let current_status;
                         let ep_link;
                         let ep_date;
-                        // console.log(`value: ${value}`);
                         
                         if (value.includes(proyect_name)) { // if it has the name of the file (is from file number).
                             files.value.push({
@@ -140,33 +119,12 @@ onMounted(async () => {
                             }
                         }
                     }
-                    // console.log(`${address}: ${value}`);
                 });
             });
             console.log(files.value);
-            // console.log(editor.value);
-
-            files.value = files.value.map(({filename, status, ep_link, ep_date}) => {
-                if (status) {
-                    return {insert: `File ${filename} is in ${status}. \n\n`}
-                }else {
-                    return {insert: ''}
-                }
-            });
-
-            
-            editor.value["editor"].__quill.setContents(files.value);
         });
-
-        // for (const [key, value] of Object.entries(workbook_.Sheets["Hoja 1"])) {
-        //     console.log(`${key}:`);
-        //     console.log(value["h"]);
-        // }
-        // console.log(workbook_);
         
     }
-
-    // file_import_input.addEventListener("change", handleFileAsync, false);
 });
 
 

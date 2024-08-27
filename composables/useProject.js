@@ -1,15 +1,20 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import exceljs from "exceljs";
 import { useOfficeStore } from '@/store/offices';
 
 export async function useProject(file) {
     let office_store = useOfficeStore();
-
     const file_data = await file.arrayBuffer();
     const project_name = ref(file.name.split('.')[0]);
     
     const file_workbook = new exceljs.Workbook();
-    const excel_data = await file_workbook.xlsx.load(file_data);
+    let excel_data;
+
+    try {
+        excel_data = await file_workbook.xlsx.load(file_data);
+    } catch (error) {
+        console.log(error);
+    }
 
     const projects_worksheets = ref([]);
     const files = ref([]);
@@ -37,7 +42,7 @@ export async function useProject(file) {
                     text.split(" ").some((cell_word_) => { //getting all the words from the excell cell
                         let cell_word = cell_word_.toLowerCase();
                         
-                        if (cell_word === 'file') {
+                        if (cell_word === 'file' || cell_word === 'number') {
                             cell_title = '# File Number';
                             cell_text = text;
                             return true;
@@ -141,9 +146,5 @@ export async function useProject(file) {
         projects_worksheets.value.push({ ...worksheet_data });
     });
 
-    console.log(projects_worksheets.value);
-    console.log(files.value);
-    
-
-    return {file_data, excel_data, project_name, files, projects_worksheets}
+    return {file_data, excel_data, project_name, files, projects_worksheets, loading_file}
 }

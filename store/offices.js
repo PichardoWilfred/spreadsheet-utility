@@ -51,6 +51,20 @@ export const useOfficeStore = defineStore('offices', {
             { initials: "WV", name: "West Virginia" },
             { initials: "WI", name: "Wisconsin" },
             { initials: "WY", name: "Wyoming" }
+        ],
+        status: [
+            'Report Completed', 
+            'Examiner Workbench', 
+            'In Process with Agent',
+            'In process with Vendor',
+            'In process with Energy',
+            'In process with RTT',
+            'Quality Control',
+            'Extensive Energy',
+            'Searching',
+            'Vendor Search',
+            'Vendor Support',
+            'Split and Labeling',
         ]
     })
 })
