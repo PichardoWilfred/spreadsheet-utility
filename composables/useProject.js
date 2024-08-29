@@ -84,8 +84,8 @@ export async function useProject(file) {
             if (is_file_row) { // when the row has a file within
                 row["_cells"].map(({text, address, row, _row, style}) => {
                     if (has_valid_nomenclature(text)) { // if it is a file cell
-                        // getting the letter
-                        const get_letter = (column_name) => worksheet_data["title_cells"].find(({subject_title}) => subject_title === column_name); 
+                        const get_letter = (column_name) => // getting the letter
+                            worksheet_data["title_cells"].find(({subject_title}) => subject_title === column_name); 
                         let { column: status_letter } = get_letter('Status'); // getting the letter of the status for this file
                         let { column: date_letter } = get_letter('Current Status / Time Date');
                         let { column: eta_letter } = get_letter('ETA');
@@ -102,13 +102,17 @@ export async function useProject(file) {
                         let ep_link = _row.getCell(ep_link_letter);
                         let ep_date = _row.getCell(ep_date_letter);
 
-                        let was_changed = status.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
+                        let status_changed = status.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
+                        let ep_link_changed = ep_link.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
+                        let eta_changed = eta.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
                         
                         let file = {
                             filename: text.replace(/\s/g,''),
                             address,
                             row,
-                            was_changed: was_changed,
+                            status_changed,
+                            ep_link_changed,
+                            eta_changed,
                             worksheet: worksheet_data,
                             column: address.split("")[0],
                             row_data: _row,
@@ -146,5 +150,5 @@ export async function useProject(file) {
         projects_worksheets.value.push({ ...worksheet_data });
     });
 
-    return {file_data, excel_data, project_name, files, projects_worksheets, loading_file}
+    return {file_data, excel_data, project_name, files, projects_worksheets}
 }
