@@ -107,12 +107,12 @@ export async function useProject(file) {
                         let eta_changed = eta.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
                         
                         let file = {
-                            filename: text.replace(/\s/g,''),
                             address,
                             row,
                             status_changed,
                             ep_link_changed,
                             eta_changed,
+                            filename: text.replace(/\s/g,''),
                             worksheet: worksheet_data,
                             column: address.split("")[0],
                             row_data: _row,

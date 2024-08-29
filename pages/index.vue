@@ -2,11 +2,11 @@
     <div>
         <main class="max-w-[1020px] mx-auto">
             <section class="p-10">
-                <h1 class="font-bold text-4xl">
-                    All the leaves are brown
+                <h1 class="font-bold text-4xl text-center">
+                    DR Tracking Utility
                 </h1>
-                <p class="font-" style="font-style: italic;">
-                    all the leaves are brown...
+                <p class="text-center" style="font-style: italic;">
+                    Prototype
                 </p>
                 <div class="mt-5">
                     <client-only placeholder="loading...">
@@ -35,9 +35,11 @@ const editor = ref(null);
 const delta_email_content = ref([]);
 
 const process_file = async (file) => {
+
     const { project_name, excel_data, files } = await useProject(file); // the file will be fully proced
     const { target_editor } = useEditor(editor.value, files);
-    
+
+
 }
 
 
