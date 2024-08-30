@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import exceljs from "exceljs";
+import { StringUtils } from 'turbocommons-ts';
 import { useOfficeStore } from '@/store/offices';
 
 export async function useProject(file) {
@@ -22,6 +23,19 @@ export async function useProject(file) {
     
     const get_state = (value_) => {return value_.slice(4,6)};
     const has_valid_nomenclature = (file_) => String(file_.replace(/\s/g,'')).toLowerCase().startsWith(project_name.value.toLowerCase()) && office_store.states.map((state) => state.initials).includes( get_state(file_.replace(/\s/g,'')) ) ;
+
+    function compare_strings(string_1, string_2) {
+        // build the diff view and return a DOM node
+        let percentage = StringUtils.compareSimilarityPercent(string_2, string_1);
+        console.log(`${string_1} & ${string_2} | ${parseInt(percentage)} (${percentage})`);
+        
+        return parseInt(percentage) >= 32;
+    }
+
+    function valid_eta_date(dateStr) { // Regular expression pattern to match the date formats "MM-DD-YYYY", "MM/DD/YYYY", "MM-DD-YY", or "MM/DD/YY"
+        const pattern = /^\d{2}[-/]\d{2}[-/]\d{2}(\d{2})?$/;
+        return pattern.test(dateStr);
+    }
 
     excel_data.worksheets.map((worksheet) => {
         let worksheet_data = {id: worksheet.id, name: worksheet.name, files: []}
@@ -85,7 +99,8 @@ export async function useProject(file) {
                 row["_cells"].map(({text, address, row, _row, style}) => {
                     if (has_valid_nomenclature(text)) { // if it is a file cell
                         const get_letter = (column_name) => // getting the letter
-                            worksheet_data["title_cells"].find(({subject_title}) => subject_title === column_name); 
+                        worksheet_data["title_cells"].find(({subject_title}) => subject_title === column_name);
+
                         let { column: status_letter } = get_letter('Status'); // getting the letter of the status for this file
                         let { column: date_letter } = get_letter('Current Status / Time Date');
                         let { column: eta_letter } = get_letter('ETA');
@@ -102,13 +117,39 @@ export async function useProject(file) {
                         let ep_link = _row.getCell(ep_link_letter);
                         let ep_date = _row.getCell(ep_date_letter);
 
-                        let status_changed = status.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
-                        let ep_link_changed = ep_link.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
-                        let eta_changed = eta.style.fill.fgColor.argb.toUpperCase() === 'FFFFFF00';
+                        let status_changed = status.style?.fill?.fgColor.argb.toUpperCase() === 'FFFFFF00';
+                        let ep_link_changed = ep_link.style?.fill?.fgColor.argb.toUpperCase() === 'FFFFFF00';
+                        let eta_changed = eta.style?.fill?.fgColor.argb.toUpperCase() === 'FFFFFF00';
                         
+                        let changed_as = '';
+                        let completed_src = status.text.toLowerCase().split(" ");
+                        
+                        if (eta_changed) { // normal | agente o vendor | standard
+                            
+                            if ( valid_eta_date(eta.text) ) {
+                                changed_as = 'eta';
+                            }
+                            ['standard eta', 'vendors eta', 'agents eta'].map((eta_string) => {
+                                if (compare_strings(eta_string, eta.text.toLowerCase())) {
+                                    changed_as = eta_string;
+                                }
+                            });
+                        }
+
+                        if (completed_src.length === 1 && completed_src[0] === 'completed') {
+                            changed_as = 'completed';
+                        }else if (completed_src.length === 2 && (completed_src[0] === 'report' && completed_src[1] === 'completed')) {
+                            changed_as = 'completed';
+                        } 
+
+                        if (ep_link_changed && ep_link.text.startsWith('http://')) { // if its on yellow & has an EP Link 
+                            changed_as = 'ep_link'
+                        }
+
                         let file = {
                             address,
                             row,
+                            changed_as, //
                             status_changed,
                             ep_link_changed,
                             eta_changed,

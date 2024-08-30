@@ -38,8 +38,7 @@ const process_file = async (file) => {
 
     const { project_name, excel_data, files } = await useProject(file); // the file will be fully proced
     const { target_editor } = useEditor(editor.value, files);
-
-
+    
 }
 
 

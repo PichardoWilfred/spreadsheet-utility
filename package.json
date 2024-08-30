@@ -14,10 +14,12 @@
     "@pinia/nuxt": "^0.5.4",
     "@vueup/vue-quill": "^1.2.0",
     "exceljs": "^4.4.0",
+    "jsdifflib": "^1.1.0",
     "nuxt": "^3.12.4",
     "pinia": "^2.2.2",
     "quill": "^2.0.2",
     "sheetjs-style": "^0.15.8",
+    "turbocommons-ts": "^3.12.0",
     "vue": "latest",
     "xlsx-js-style": "^1.2.0",
     "xlsx-style": "^0.8.13"
