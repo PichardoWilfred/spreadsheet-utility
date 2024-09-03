@@ -3,5 +3,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   plugins: ['~/plugins/quill.js'],
-  modules: ["@nuxtjs/tailwindcss", '@pinia/nuxt']
+  app: {
+    head: {
+      title: 'DR Tracking Tool'
+    }
+  },
+  modules: ['@pinia/nuxt', '@nuxt/ui'],
+  css: ['~/assets/css/main.css'],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 })
