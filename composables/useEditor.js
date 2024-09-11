@@ -1,15 +1,21 @@
 import { ref } from 'vue';
-import { StringUtils } from 'turbocommons-ts';
+import {StringUtils} from 'turbocommons-ts';
+import stringComparison from 'string-comparison';
 export async function useEditor(editor, files, check_highlighted_changes) {
+
+    let compareSimilarityPercent_ = stringComparison.lcs.similarity;
+    console.log(compareSimilarityPercent_);
+    
     const target_editor = editor.getQuill();
     let submitter_name = 'John';
 
     const delta_content = ref([]); //text area content
     
     function compare_strings(string_1, string_2, minimal_percentage) {
-        let percentage = StringUtils.compareSimilarityPercent(string_2, string_1); 
+        // build the diff view and return a DOM node
+        let percentage = compareSimilarityPercent_(string_2, string_1);
         // console.log(`${string_1} & ${string_2} | ${parseInt(percentage)} (${percentage})`);
-        return parseInt(percentage) >= minimal_percentage;
+        return parseInt(percentage) >= minimal_percentage * 0.01;
     }
     const raw_changed_files = files.value.filter(({was_changed}) => was_changed);
     // console.log(files.value);

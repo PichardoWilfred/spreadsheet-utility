@@ -1,13 +1,18 @@
 import { ref, computed } from 'vue';
 import exceljs from "exceljs";
-import { StringUtils } from 'turbocommons-ts';
+import {StringUtils} from 'turbocommons-ts';
+import stringComparison from 'string-comparison';
 import { useOfficeStore } from '@/store/offices';
 
 export async function useProject(file) {
+    
+    let compareSimilarityPercent_ = stringComparison.lcs.similarity;
+    // console.log(compareSimilarityPercent_('papo', 'papotico'));
+
     let office_store = useOfficeStore();
     const file_data = await file.arrayBuffer();
-    const project_name = ref(file.name.split('.')[0]);
-    
+    const project_name = ref(file.name.split('.')[0]); 
+
     const file_workbook = new exceljs.Workbook();
     let excel_data;
 
@@ -27,9 +32,9 @@ export async function useProject(file) {
 
     function compare_strings(string_1, string_2, minimal_percentage) {
         // build the diff view and return a DOM node
-        let percentage = StringUtils.compareSimilarityPercent(string_2, string_1);
+        let percentage = compareSimilarityPercent_(string_2, string_1);
         // console.log(`${string_1} & ${string_2} | ${parseInt(percentage)} (${percentage})`);
-        return parseInt(percentage) >= minimal_percentage;
+        return parseInt(percentage) >= minimal_percentage * 0.01;
     }
 
     function valid_eta_date(dateStr) { // Regular expression pattern to match the date formats "MM-DD-YYYY", "MM/DD/YYYY", "MM-DD-YY", or "MM/DD/YY"
