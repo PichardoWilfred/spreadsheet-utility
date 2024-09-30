@@ -65,6 +65,74 @@ export const useOfficeStore = defineStore('offices', {
             'Vendor Search',
             'Vendor Support',
             'Split and Labeling',
+        ],
+        standard_ETAs: [
+            {
+                state: 'CA',
+                normal: { from: 4, to: 5 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 12, to: 15, not_applicable: true }
+            },
+            {
+                state: 'WA',
+                normal: { from: 4, to: 5 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 12, to: 15, not_applicable: true }
+            },
+            {
+                state: 'OR',
+                normal: { from: 4, to: 5 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 12, to: 15, not_applicable: true }
+            },
+            {
+                state: 'HI',
+                normal: { from: 4, to: 5 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 12, to: 15, not_applicable: true }
+            },
+            {
+                state: 'AZ',
+                normal: { from: 4, to: 5 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 1, to: 1, not_applicable: true }
+            },
+            {
+                state: 'NV',
+                normal: { from: 4, to: 5 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 1, to: 1, not_applicable: true }
+            },
+            {
+                state: 'TX',
+                normal: { from: 10, to: 15 },
+                update: { from: 1, to: 2},
+                extensive_search: { from: 1, to: 1, not_applicable: true }
+            },
+            {
+                state: 'FL',
+                normal: { from: 5, to: 7 },
+                update: { from: 1, to: 1, not_applicable: true},
+                extensive_search: { from: 12, to: 15 }
+            },
+            {
+                state: 'IL',
+                normal: { from: 9, to: 1 },
+                update: { from: 1, to: 1, not_applicable: true},
+                extensive_search: { from: 1, to: 1, not_applicable: true }
+            },
+            {
+                state: 'IN',
+                normal: { from: 9, to: 1 },
+                update: { from: 1, to: 1, not_applicable: true},
+                extensive_search: { from: 1, to: 1, not_applicable: true }
+            },
+            {
+                state: 'OK',
+                normal: { from: 7, to: 10 },
+                update: { from: 1, to: 1, not_applicable: true},
+                extensive_search: { from: 1, to: 1, not_applicable: true }
+            },
         ]
     })
 })

@@ -259,83 +259,12 @@ export async function useProject(file) {
         projects_worksheets.value.push({ ...worksheet_data });
     });
 
-    
-    const standard_ETAS = [
-        {
-            state: 'CA',
-            normal: { from: 4, to: 5 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 12, to: 15, not_applicable: true }
-        },
-        {
-            state: 'WA',
-            normal: { from: 4, to: 5 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 12, to: 15, not_applicable: true }
-        },
-        {
-            state: 'OR',
-            normal: { from: 4, to: 5 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 12, to: 15, not_applicable: true }
-        },
-        {
-            state: 'HI',
-            normal: { from: 4, to: 5 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 12, to: 15, not_applicable: true }
-        },
-        {
-            state: 'AZ',
-            normal: { from: 4, to: 5 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 1, to: 1, not_applicable: true }
-        },
-        {
-            state: 'NV',
-            normal: { from: 4, to: 5 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 1, to: 1, not_applicable: true }
-        },
-        {
-            state: 'TX',
-            normal: { from: 10, to: 15 },
-            update: { from: 1, to: 2},
-            extensive_search: { from: 1, to: 1, not_applicable: true }
-        },
-        {
-            state: 'FL',
-            normal: { from: 5, to: 7 },
-            update: { from: 1, to: 1, not_applicable: true},
-            extensive_search: { from: 12, to: 15 }
-        },
-        {
-            state: 'IL',
-            normal: { from: 9, to: 1 },
-            update: { from: 1, to: 1, not_applicable: true},
-            extensive_search: { from: 1, to: 1, not_applicable: true }
-        },
-        {
-            state: 'IN',
-            normal: { from: 9, to: 1 },
-            update: { from: 1, to: 1, not_applicable: true},
-            extensive_search: { from: 1, to: 1, not_applicable: true }
-        },
-        {
-            state: 'OK',
-            normal: { from: 7, to: 10 },
-            update: { from: 1, to: 1, not_applicable: true},
-            extensive_search: { from: 1, to: 1, not_applicable: true }
-        },
-    ];
-
-    
-    let standard_ETA_states = standard_ETAS.map(({state}) => {return state});
+    let standard_ETA_states = office_store.standard_ETAs.map(({state}) => {return state});
     
     let standard_ETA_files = files.value.filter((file) => {
         let invalid_etas = ['completed', 'ep_link'];
         if (standard_ETA_states.includes(file.local_office_state) && !invalid_etas.includes(file.changed_as)) {return true};
     });
-
+    
     return {file_data, excel_data, project_name, files, projects_worksheets, standard_ETA_files}
 }

@@ -18,6 +18,8 @@ export function useDateFormatted(date, format = 'text') {
     
     // Formatear la fecha en el formato deseado
     switch (format) {
+        case 'simple-slash':
+            return `${(date.getMonth() + 1)}/${day > 10 ? day : '0'+day}/${year}`;
         case 'simple':
             return `${(date.getMonth() + 1)}-${day}-${year}`;
         default:

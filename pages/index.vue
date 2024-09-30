@@ -7,7 +7,13 @@
             <p class="text-center" style="font-style: italic;">
                 Prototype
             </p>
-            <div class="mt-5">
+            <div class="flex flex-col mt-5">
+                <UButton :disabled="disabled_standard" @click.prevent="open_file_standard_ETAs_modal"
+                color="orange" variant="soft" 
+                class="mb-2 ms-auto transition-all">
+                    <Icon name="material-symbols:event-upcoming" />
+                    Revisar standard ETAs
+                </UButton>
                 <client-only placeholder="loading...">
                     <QuillEditor ref="editor" :options="editor_options"/>
                 </client-only>
@@ -51,67 +57,131 @@
             Calcular dias laborales
         </h4>
         <div class="flex px-4 space-x-3">
-            <div class="flex flex-col justify-center max-w-[230px] py-4 rounded-[8px]">
-                <!-- border border-gray-800  -->
-                <div class="flex flex-col p-1 mb-5">
-                    <span class="font-bold font-poppins text-[14px] mb-1">
-                        Fecha
-                    </span>
-                    <UPopover :popper="{ placement: 'bottom-start' }">
-                        <UButton :label="format_date(from_date)" color="cyan" variant="soft" icon="i-heroicons-calendar-days-20-solid" />
-                        <template #panel="{ close }">
-                            <CustomDatePicker v-model="from_date" is-required 
-                            @close="close" />
-                        </template>
-                    </UPopover>
-                </div>
-                <div class="flex flex-col mb-6">
-                    <span class="font-bold font-poppins text-[14px] mb-1">
-                        Dias laborables
-                    </span>
-                    <UInput type="number" v-model="bussiness_days" @blur="count_bussiness_days" />
-                </div>
-            </div>
-            <div class="font-bold font-poppins font-lg p-4 px-0">
-                <div class="flex flex-col">
-                    <span class="font-bold font-poppins text-xs mb-3">
-                        ETA:
-                    </span>
-                    <UButton :label="`Copiar `+date_bussiness_days" @click.prevent="copy(date_bussiness_days)" icon="i-heroicons-calendar-days-20-solid"/> 
-                </div>
-            </div>
-            <!-- <UTable :columns="standard_ETA_columns" :rows="standard_ETAS">
-                <template #state-data="{ row }">
-                    <b>{{ row.state }}</b>
-                </template>
-                <template #normal-data="{ row }">
-                    <div v-if="row.normal.not_applicable"></div>
-                    <div v-else>
-                        <b>{{ row.normal.from }}</b> /
-                        <b>{{ row.normal.to }}</b>
-                    </div> 
-                </template>
-                <template #update-data="{ row }">
-                    <div v-if="row.update.not_applicable"></div>
-                    <div v-else>
-                        <b>{{ row.update.from }}</b> /
-                        <b>{{ row.update.to }}</b>  
+            <div class="flex flex-col w-full">
+                <div class="flex flex-col justify-center py-4 rounded-[8px]">
+                    <div class="flex space-x-3">
+                        <div class="flex flex-col p-1 mb-5">
+                            <span class="font-bold font-poppins text-[14px] mb-1">
+                                Fecha
+                            </span>
+                            <UPopover :popper="{ placement: 'bottom-start' }">
+                                <UButton :label="format_date(from_date)" color="cyan" variant="soft" icon="i-heroicons-calendar-days-20-solid" />
+                                <template #panel="{ close }">
+                                    <CustomDatePicker v-model="from_date" is-required 
+                                    @close="close" />
+                                </template>
+                            </UPopover>
+                        </div>
+                        <div class="flex flex-col mb-6">
+                            <span class="font-bold font-poppins text-[14px] mb-2">
+                                Dias laborables
+                            </span>
+                            <UInput type="number" v-model="bussiness_days" @blur="count_bussiness_days" />
+                        </div>
                     </div>
-                </template>
-                <template #extensive_search-data="{ row }">
-                    <div v-if="row.extensive_search.not_applicable"></div>
-                    <div v-else>
-                        <b>{{ row.extensive_search.from }}</b> /
-                        <b>{{ row.extensive_search.to }}</b>  
-                    </div>
-                </template>
-            </UTable> -->
+                    <div class="font-bold font-poppins font-lg p-4 px-0 max-w-[160px]">
+                        <div class="flex flex-col">
+                            <span class="font-bold font-poppins text-xs mb-3">
+                                ETA:
+                            </span>
+                            <UButton :label="`Copiar `+date_bussiness_days" class="flex justify-center " @click.prevent="copy(date_bussiness_days)" icon="i-heroicons-calendar-days-20-solid"/> 
+                        </div>
+                </div>
+                </div>
+                <UAccordion :items="[{ label: 'Standard ETAs', defaultOpen: false, slot: 'standard-etas', icon: 'i-heroicons-calendar-days-20-solid'}]" 
+                :ui="{ wrapper: 'flex flex-col w-full' }">
+                    <template #standard-etas>
+                        <UTable :columns="standard_ETA_columns" :rows="standard_ETAS" :ui="{td: {
+                            base: 'whitespace-nowrap',
+                            padding: 'p-2 px-4',
+                            color: 'text-gray-500 dark:text-gray-400',
+                            font: '',
+                            size: 'text-sm',
+                        }}">
+                            <template #state-data="{ row }">
+                                <b>{{ row.state }}</b>
+                            </template>
+                            <template #normal-data="{ row }">
+                                <div v-if="row.normal.not_applicable"></div>
+                                <div v-else>
+                                    <b>{{ row.normal.from }}</b> /
+                                    <b>{{ row.normal.to }}</b>
+                                </div> 
+                            </template>
+                            <template #update-data="{ row }">
+                                <div v-if="row.update.not_applicable"></div>
+                                <div v-else>
+                                    <b>{{ row.update.from }}</b> /
+                                    <b>{{ row.update.to }}</b>  
+                                </div>
+                            </template>
+                            <template #extensive_search-data="{ row }">
+                                <div v-if="row.extensive_search.not_applicable"></div>
+                                <div v-else>
+                                    <b>{{ row.extensive_search.from }}</b> /
+                                    <b>{{ row.extensive_search.to }}</b>  
+                                </div>
+                            </template>
+                        </UTable>
+                    </template>
+                </UAccordion>
+            </div>
         </div>
         <div class="border border-gray-800 mb-4"/>
         <UButton @click.prevent="count_bussiness_days" color="green" class="max-w-[220px] flex justify-center ms-auto mb-5 me-4"> 
             <Icon name="material-symbols:event" />
             Calcular
         </UButton>
+    </UModal>
+    
+    <UModal v-model="file_standard_ETAs_modal" :ui="{width: 'sm:max-w-[820px]'}">
+        <div class="flex px-4 py-3 border-b border-gray-800">
+            <UBadge color="primary" :variant="main_file_style" class="text-lg my-auto">
+                Standard ETAs de <b class="ms-1"> {{ main_file }}</b>
+            </UBadge>
+        </div>
+        <div class="p-4">
+            
+            <UTable :columns="file_standard_ETA_columns" :rows="standard_ETA_files_rows" :ui="{td: {
+                padding: 'p-2 px-4',
+            }}">
+                <template #filename-date="{ row }">
+                    <b>{{ row.filename }}</b>
+                </template>
+                <template #state-data="{ row }">
+                    <b>{{ row.state }}</b>
+                </template>
+                <template #launch_date-data="{ row }">
+                    
+                    <UPopover :popper="{ placement: 'bottom-start' }">
+                        <UButton :label="format_date(row.launch_date)" color="cyan" variant="soft" 
+                        icon="i-heroicons-calendar-days-20-solid" />
+                        <template #panel="{ close }">
+                            <CustomDatePicker v-model="row.launch_date" is-required 
+                            @close="close" />
+                        </template>
+                    </UPopover>
+                </template>
+                <template #normal-data="{ row }">
+                    <div v-if="row.normal.not_applicable"></div>
+                    <UButton v-else @click.prevent="copy_standard_eta_date(row, row.normal)" variant="soft">
+                        <b>{{ row.normal.from }}</b> / <b>{{ row.normal.to }}</b>
+                    </UButton> 
+                </template>
+                <template #update-data="{ row }" >
+                    <div v-if="row.update.not_applicable"></div>
+                    <UButton v-else @click.prevent="copy_standard_eta_date(row, row.update)" variant="soft" color="teal">
+                        <b>{{ row.update.from }}</b> / <b>{{ row.update.to }}</b>  
+                    </UButton>
+                </template>
+                <template #extensive_search-data="{ row }">
+                    <div v-if="row.extensive_search.not_applicable"></div>
+                    <UButton v-else @click.prevent="copy_standard_eta_date(row, row.extensive_search)" variant="soft" color="cyan">
+                        <b>{{ row.extensive_search.from }}</b> / <b>{{ row.extensive_search.to }}</b>  
+                    </UButton>
+                </template>
+            </UTable>
+        </div>
     </UModal>
 </template>
 <script setup>
@@ -150,12 +220,56 @@ const subject_line_status = computed(() => {
 });
 
 
+const standard_ETA_files_rows = ref([]);
+
+const file_standard_ETA_columns = [
+    { label: 'Filename', key: 'filename'},
+    { label: 'Fecha de Inicio', key: 'launch_date'},
+    { label: 'State', key: 'state' }, 
+    { label: 'Normal', key: 'normal' }, 
+    { label: 'Update', key: 'update' },
+    { label: 'Extensive Search', key: 'extensive_search' },
+];
+const copy_standard_eta_date = (row, parameters) => {
+    const from_date = useDateFormatted(business_days_utility.addDays(row.launch_date, (parameters.from - 1)).$d, 'simple-slash');
+    const to_date = useDateFormatted(business_days_utility.addDays(row.launch_date, (parameters.to - 1)).$d, 'simple-slash');
+
+    let standard_ETA_copy = `Standard ETA ${from_date} - ${to_date}`
+    copy(standard_ETA_copy);
+}
 const process_file = async (file) => {
     const { project_name, excel_data, files, standard_ETA_files } = await useProject(file); // the file will be fully proced
     const { target_editor } = useEditor(editor.value, files, check_highlighted_changes.value, ask_for_updated_ep_links.value);
     
     main_file.value = project_name.value;
     main_file_style.value = 'soft';
+
+    if (standard_ETA_files.length) {
+        disabled_standard.value = false;
+        standard_ETA_files_rows.value = standard_ETA_files.map((file) => {
+            const state_found = standard_ETAS.find(({state}) => state === file.local_office_state);
+            return {
+                filename: file.filename,
+                state: file.local_office_state,
+                update: {...state_found.update}, 
+                normal: {...state_found.normal },
+                extensive_search: { ...state_found.extensive_search },
+                launch_date: new Date(),
+            }
+        });
+        
+    }else {
+        disabled_standard.value = true;
+    }
+}
+
+const disabled_standard = ref(true);
+const file_standard_ETAs_modal = ref(false);
+const open_file_standard_ETAs_modal = () => {
+    file_standard_ETAs_modal.value = true;
+}
+const close_file_standard_ETAs_modal = () => {
+    file_standard_ETAs_modal.value = false;
 }
 
 const standard_ETA_modal = ref(false);
@@ -166,7 +280,7 @@ const open_standard_ETA_modal = () => {
 const business_days_utility = businessDays({state: "pa"});
 const from_date = ref( new Date() );
 const bussiness_days = ref(0);
-const date_bussiness_days = ref(useDateFormatted(new Date(), 'simple'));
+const date_bussiness_days = ref(useDateFormatted(new Date(), 'simple-slash'));
 
 const format_date = (date) => {
     const formatted_Date = useDateFormatted(date);
@@ -175,7 +289,7 @@ const format_date = (date) => {
 
 const count_bussiness_days = () => {
     let standard_ETA = business_days_utility.addDays(from_date.value, (bussiness_days.value));
-    const date_ = useDateFormatted(standard_ETA.$d, 'simple');
+    const date_ = useDateFormatted(standard_ETA.$d, 'simple-slash');
     date_bussiness_days.value = date_; 
     copy(date_);
 }
