@@ -1,10 +1,10 @@
 import { ref } from 'vue';
 import {StringUtils} from 'turbocommons-ts';
 import stringComparison from 'string-comparison';
-export async function useEditor(editor, files, check_highlighted_changes) {
+export async function useEditor(editor, files, check_highlighted_changes, ask_for_updated_ep_links) {
 
     let compareSimilarityPercent_ = stringComparison.lcs.similarity;
-    console.log(compareSimilarityPercent_);
+    // console.log(compareSimilarityPercent_);
     
     const target_editor = editor.getQuill();
     let submitter_name = 'John';
@@ -239,6 +239,11 @@ export async function useEditor(editor, files, check_highlighted_changes) {
     if (check_highlighted_changes) {
         delta_content.value.push({ // adding the greet
             insert: `Please see the attached spreadsheet for the most recent changes highlighted in yellow, \n\n`
+        });
+    }
+    if (ask_for_updated_ep_links) {
+        delta_content.value.push({ // adding the greet
+            insert: `Also, Would you like to receive updated EP Links for these files? \n\n`
         });
     }
     delta_content.value.push({ // adding the goodbyes

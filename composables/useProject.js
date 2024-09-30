@@ -69,7 +69,7 @@ export async function useProject(file) {
                 let cell_values = worksheet.getCell(file_subject_cell)["_column"]["values"].filter((value) => value.length);
                 let accumulated_prefixes = [];
 
-                cell_values.map((cell_text) => {
+                cell_values.map((cell_text) => { //getting the projects main file
                     let prefix = cell_text.slice(0, 4);
                     let found_index = accumulated_prefixes.findIndex((value) => value.prefix === prefix);
                     if (found_index !== -1) {
@@ -82,14 +82,13 @@ export async function useProject(file) {
                 let index_bigger = 0;
                 let bigger_quantity = 0;
 
-                accumulated_prefixes.map(({prefix, quantity}, _index) => {
+                accumulated_prefixes.map(({prefix, quantity}, _index) => { // getting the most repeated prefix to identifyt it as the project file.
                     if (quantity >= bigger_quantity) {
                         bigger_quantity = quantity;
                         index_bigger = _index;
                     }
                 });
                 project_name.value = accumulated_prefixes[index_bigger].prefix; // project name
-                console.log(project_name.value );
                 
                 let title_addresses = [];
 
@@ -99,8 +98,8 @@ export async function useProject(file) {
 
                     text.split(" ").some((cell_word_) => { //getting all the words from the excell cell
                         let cell_word = cell_word_.toLowerCase();
-                        
-                        if (cell_word === 'file' || cell_word === 'number') {
+                        let file_number = ['file', 'number', '#', 'title']
+                        if (file_number.includes(cell_word)) {
                             cell_title = '# File Number';
                             cell_text = text;
                             return true;
@@ -171,24 +170,22 @@ export async function useProject(file) {
                         let completed_src = status.text.toLowerCase().split(" ");
                         
                         //get a valid eta date
-                        const get_valid_date = (file_) => {
-                            let date_src = file_.text.toLowerCase().split(" ");
-                            ['standard','eta','vendors','agents'].map((keyword) => {
-                                date_src.map((word, word_index) => {
-                                    if ( compare_strings(keyword, word, 80) ) {
-                                        date_src.splice(word_index, 1);
-                                    }
-                                })
-                            });
-                            return date_src.join(" ");
-                        }
+                        // const get_valid_date = (file_) => {
+                        //     let date_src = file_.text.toLowerCase().split(" ");
+                        //     ['standard','eta','vendors','agents'].map((keyword) => {
+                        //         date_src.map((word, word_index) => {
+                        //             if ( compare_strings(keyword, word, 80) ) {
+                        //                 date_src.splice(word_index, 1);
+                        //             }
+                        //         })
+                        //     });
+                        //     return date_src.join(" ");
+                        // }
 
                         if (eta_changed) { // normal | agente o vendor | standard
-                            
                             let keyword_found = false;
                             for (const keyword of ['standard', 'vendors', 'agents']) {
                                 if (keyword_found) break;
-                                // console.log('comparing ', keyword);
                                 let date_per_word = eta.text.toLowerCase().split(" ");
                                 
                                 changed_as = 'eta';
@@ -196,7 +193,6 @@ export async function useProject(file) {
                                     if (compare_strings(keyword, word, 80)) {
                                         changed_as = keyword;
                                         keyword_found = true;
-                                        // console.log(`${keyword} matches!`);
                                         break;
                                     }
                                 }
@@ -212,6 +208,10 @@ export async function useProject(file) {
                         if (ep_link_changed && ep_link.text.startsWith('https://')) { // if its on yellow & has an EP Link 
                             changed_as = 'ep_link';
                         }
+                        // getting its standard ETA
+                        let local_office_state = get_state(text.replace(/\s/g,''));
+                        
+                        
                         
                         let file = {
                             address,
@@ -247,7 +247,7 @@ export async function useProject(file) {
                             ep_link_address: ep_link.address,
                             ep_date_address: ep_date.address,
 
-                            local_office_state: get_state(text.replace(/\s/g,''))
+                            local_office_state, 
                         }
 
                         files.value.push({...file});
@@ -258,6 +258,84 @@ export async function useProject(file) {
         });
         projects_worksheets.value.push({ ...worksheet_data });
     });
-    console.log();
-    return {file_data, excel_data, project_name, files, projects_worksheets}
+
+    
+    const standard_ETAS = [
+        {
+            state: 'CA',
+            normal: { from: 4, to: 5 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 12, to: 15, not_applicable: true }
+        },
+        {
+            state: 'WA',
+            normal: { from: 4, to: 5 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 12, to: 15, not_applicable: true }
+        },
+        {
+            state: 'OR',
+            normal: { from: 4, to: 5 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 12, to: 15, not_applicable: true }
+        },
+        {
+            state: 'HI',
+            normal: { from: 4, to: 5 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 12, to: 15, not_applicable: true }
+        },
+        {
+            state: 'AZ',
+            normal: { from: 4, to: 5 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 1, to: 1, not_applicable: true }
+        },
+        {
+            state: 'NV',
+            normal: { from: 4, to: 5 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 1, to: 1, not_applicable: true }
+        },
+        {
+            state: 'TX',
+            normal: { from: 10, to: 15 },
+            update: { from: 1, to: 2},
+            extensive_search: { from: 1, to: 1, not_applicable: true }
+        },
+        {
+            state: 'FL',
+            normal: { from: 5, to: 7 },
+            update: { from: 1, to: 1, not_applicable: true},
+            extensive_search: { from: 12, to: 15 }
+        },
+        {
+            state: 'IL',
+            normal: { from: 9, to: 1 },
+            update: { from: 1, to: 1, not_applicable: true},
+            extensive_search: { from: 1, to: 1, not_applicable: true }
+        },
+        {
+            state: 'IN',
+            normal: { from: 9, to: 1 },
+            update: { from: 1, to: 1, not_applicable: true},
+            extensive_search: { from: 1, to: 1, not_applicable: true }
+        },
+        {
+            state: 'OK',
+            normal: { from: 7, to: 10 },
+            update: { from: 1, to: 1, not_applicable: true},
+            extensive_search: { from: 1, to: 1, not_applicable: true }
+        },
+    ];
+
+    
+    let standard_ETA_states = standard_ETAS.map(({state}) => {return state});
+    
+    let standard_ETA_files = files.value.filter((file) => {
+        let invalid_etas = ['completed', 'ep_link'];
+        if (standard_ETA_states.includes(file.local_office_state) && !invalid_etas.includes(file.changed_as)) {return true};
+    });
+
+    return {file_data, excel_data, project_name, files, projects_worksheets, standard_ETA_files}
 }
